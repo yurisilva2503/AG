@@ -8,6 +8,7 @@ services:
     restart: unless-stopped
     environment:
       - PYTHONUNBUFFERED=1
+      - PORT=8000
 
   web:
     build:
@@ -18,3 +19,6 @@ services:
     restart: unless-stopped
     depends_on:
       - api
+    environment:
+      - API_URL=http://api:8000
+      - PORT=80
