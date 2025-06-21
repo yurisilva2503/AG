@@ -1,24 +1,9 @@
+version: '3.8'
+
 services:
-  api:
-    build:
-      context: .
-      target: api
+  app:
+    build: .
     ports:
       - "8000:8000"
-    restart: unless-stopped
     environment:
-      - PYTHONUNBUFFERED=1
       - PORT=8000
-
-  web:
-    build:
-      context: .
-      target: web
-    ports:
-      - "80:80"
-    restart: unless-stopped
-    depends_on:
-      - api
-    environment:
-      - API_URL=http://api:8000
-      - PORT=80
