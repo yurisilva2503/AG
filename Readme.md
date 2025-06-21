@@ -138,4 +138,4 @@ Mostra as melhores redes e exemplos do CIFAR-10 corretamente e incorretamente cl
 
 ## 📜 Licença
 
-Este projeto é acadêmico. Consulte sua instituição ou autores para uso comercial.
+Este projeto é acadêmico.
