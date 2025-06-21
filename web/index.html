@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeuroEvolução - Otimização de CNN para CIFAR-10</title>
+    <link rel="shortcut icon" href="./images/icon.svg" type="image/svg" />
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/bootstrap-icons.css">
+    <link rel="stylesheet" href="./css/toastify.min.css">
+    <link rel="stylesheet" href="./css/datatables.min.css">
+    <link rel="stylesheet" href="./css/index.css">
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand neon-text" href="#">
+          <i class="bi bi-cpu"></i> NeuroEvolução
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="#"
+                ><i class="bi bi-house"></i> Início</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" target="_blank" href="https://github.com/NeuroEvolucao"
+                ><i class="bi bi-github"></i> GitHub</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <header class="bg-secondary text-white py-5">
+      <div class="container text-center">
+        <h1 class="display-4 fw-bold">
+          Otimização de CNN com Algoritmo Genético
+        </h1>
+        <p class="lead">
+          Encontre automaticamente os melhores hiperparâmetros para sua rede
+          neural no dataset CIFAR-10
+        </p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container py-5">
+      <div class="row">
+        <!-- Configurações -->
+        <div class="col-lg-4 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-gear"></i> Configurações do AG
+            </div>
+            <div class="card-body">
+              <form id="ag-config">
+                <div class="mb-3">
+                  <label class="form-label">Tamanho da População</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="pop-size"
+                    min="3"
+                    max="20"
+                    value="5"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Número de Gerações</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="num-generations"
+                    min="1"
+                    max="20"
+                    value="5"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Número de Épocas</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="num-epochs"
+                    min="1"
+                    max="10"
+                    value="1"
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Taxa de Mutação</label>
+                  <input
+                    type="range"
+                    class="form-range"
+                    id="mutation-rate"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value="0.4"
+                  />
+                  <div class="text-end">
+                    <span id="mutation-rate-value">0.4</span>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Método de Seleção</label>
+                  <select class="form-select" id="selection-method">
+                    <option value="elitismo">Elitismo</option>
+                    <option value="torneio" selected>Torneio</option>
+                    <option value="roleta">Roleta</option>
+                  </select>
+                </div>
+
+                <div
+                  class="mb-3"
+                  id="elitism-size-container"
+                  style="display: none"
+                >
+                  <label class="form-label">Tamanho do Elitismo</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="elitism-size"
+                    min="1"
+                    max="5"
+                    value="2"
+                  />
+                </div>
+
+                <div class="mb-3" id="tournament-size-container">
+                  <label class="form-label">Tamanho do Torneio</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="tournament-size"
+                    min="2"
+                    max="5"
+                    value="3"
+                  />
+                </div>
+
+                <div class="d-grid gap-2">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-lg"
+                    id="start-ag"
+                  >
+                    <i class="bi bi-play-fill"></i> Iniciar Algoritmo
+                  </button>
+                  <button type="button" class="btn btn-danger btn-lg mt-2" id="stop-ag" disabled style="display: none">
+                    <i class="bi bi-stop-fill"></i> Parar Execução
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card mt-4" style="max-height: 550px; overflow-y: auto; scrollbar-width: thin;">
+            <div class="card-header">
+              <i class="bi bi-sliders"></i> Espaço de Hiperparâmetros
+            </div>
+            <div class="w-100 d-flex justify-content-end px-3">
+              <small class="text-muted mt-2 mb-0"
+                ><span class="text-danger">OBS*:</span> Segure Ctrl e clique
+                para selecionar múltiplos.</small
+              >
+            </div>
+            <div class="card-body pt-1">
+              <div class="mb-3">
+                <label class="form-label">Taxa de Aprendizado</label>
+                <select class="form-select" id="learning-rate" multiple>
+                  <option value="0.001" selected>0.001</option>
+                  <option value="0.0005" selected>0.0005</option>
+                  <option value="0.0001" selected>0.0001</option>
+                  <option value="0.0003" selected>0.0003</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Batch Size</label>
+                <select class="form-select" id="batch-size" multiple>
+                  <option value="16" selected>16</option>
+                  <option value="32" selected>32</option>
+                  <option value="64" selected>64</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Número de Filtros</label>
+                <select class="form-select" id="n-filters" multiple>
+                  <option value="16" selected>16</option>
+                  <option value="64" selected>64</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">N_Fc</label>
+                <select class="form-select" id="n-fc" multiple>
+                  <option value="32" selected>32</option>
+                  <option value="64" selected>64</option>
+                  <option value="128" selected>128</option>
+                  <option value="256" selected>256</option>
+                  <option value="512" selected>512</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Dropout</label>
+                <select class="form-select" id="dropout" multiple>
+                  <option value="0.1" selected>0.1</option>
+                  <option value="0.2" selected>0.2</option>
+                  <option value="0.3" selected>0.3</option>
+                  <option value="0.4" selected>0.4</option>
+                  <option value="0.5" selected>0.5</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Weight Decay</label>
+                <select class="form-select" id="weight-decay" multiple>
+                  <option value="0" selected>0</option>
+                  <option value="0.0001" selected>0.0001</option>
+                  <option value="0.0005" selected>0.0005</option>
+                  <option value="0.001" selected>0.001</option>
+                  <option value="0.0003" selected>0.0003</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Função de Ativação</label>
+                <select class="form-select" id="activation" multiple>
+                  <option value="relu" selected>ReLU</option>
+                  <option value="leaky_relu" selected>Leaky ReLU</option>
+                  <option value="elu" selected>ELU</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Otimizador</label>
+                <select class="form-select" id="optimizer" multiple>
+                  <option value="adamw" selected>AdamW</option>
+                  <option value="sgd" selected>SGD</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Método de Agregação</label>
+                <select class="form-select" id="aggregation" multiple>
+                  <option value="sum" selected>Soma</option>
+                  <option value="concat" selected>Concatenação</option>
+                  <option value="max" selected>Max</option>
+                  <option value="avg" selected>AVG</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultados e Visualização -->
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-header">
+              <i class="bi bi-graph-up"></i> Progresso do Algoritmo
+            </div>
+            <div class="card-body">
+              <div class="fitness-chart-container">
+                <canvas id="fitness-chart"></canvas>
+              </div>
+              <div class="mt-3">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Progresso</span>
+                  <span id="progress-text">0/0</span>
+                </div>
+                <div class="progress">
+                  <div
+                    id="progress-bar"
+                    class="progress-bar"
+                    role="progressbar"
+                    style="width: 0%"
+                  ></div>
+                </div>
+                <hr class="m-0 mt-2" />
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12 mb-4">
+              <div class="card h-100">
+                <div class="card-header d-flex justify-content-center align-items-center">
+                  <span><i class="bi bi-speedometer2"></i> Estatísticas</span>
+                </div>
+                <div class="card-body">
+                  <div class="row">
+                    <!-- Seção do melhor indivíduo -->
+                    <div class="col-md-6 border-end">
+                      <div id="best-individual" class="best-individual">
+                        <p><i class="bi bi-trophy"></i> Melhor Indivíduo</p>
+                        <p class="text-center text-muted">
+                          Execute o algoritmo para ver os resultados
+                        </p>
+                      </div>
+                      <div class="mt-3 text-center">
+                        <h5 id="best-accuracy" class="text-success">Acurácia: -</h5>
+                      </div>
+                    </div>
+          
+                    <!-- Seção das estatísticas -->
+                    <div class="col-md-6">
+                      <div class="row text-center">
+                        <div class="col-6 mb-3">
+                          <div class="card param-card">
+                            <div class="card-body">
+                              <h6 class="card-title">Melhor Acurácia</h6>
+                              <h3 id="overall-best-accuracy" class="text-success">
+                                0.00%
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-6 mb-3">
+                          <div class="card param-card">
+                            <div class="card-body">
+                              <h6 class="card-title">Tempo Decorrido</h6>
+                              <h3 id="elapsed-time" class="text-info">00:00</h3>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div> <!-- fim estatísticas -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-terminal"></i> Logs em Tempo Real
+            </div>
+            <div class="card-body" style="max-height: 250px; overflow-y: auto">
+              <pre
+                id="log-console"
+                class="m-0"
+                style="font-size: 0.85rem; white-space: pre-wrap"
+              >
+              
+            </pre>
+            </div>
+          </div>
+
+          <div class="card mt-4 mb-4">
+            <div class="card-header">
+              <i class="bi bi-images"></i> Exemplos de Classificação
+            </div>
+            <div class="card-body">
+              <ul class="nav nav-tabs" id="classification-tabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link active"
+                    id="correct-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#correct"
+                    type="button"
+                  >
+                    Acertos
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link"
+                    id="wrong-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#wrong"
+                    type="button"
+                  >
+                    Erros
+                  </button>
+                </li>
+              </ul>
+              <div class="tab-content py-3" id="classification-tabs-content">
+                <div
+                  class="tab-pane fade show active"
+                  id="correct"
+                  role="tabpanel"
+                >
+                  <div
+                    id="correct-classifications"
+                    class="row justify-content-center flex-wrap"
+                  >
+                    <div class="col-12 text-center text-muted loading-text">
+                      Nenhum exemplo disponível ainda
+                    </div>
+                  </div>
+                </div>
+                <div class="tab-pane fade" id="wrong" role="tabpanel">
+                  <div id="wrong-classifications" class="row">
+                    <div class="col-12 text-center text-muted loading-text">
+                      Nenhum exemplo disponível ainda
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <i class="bi bi-table"></i> Exportar Resultados
+            </div>
+            <div class="card-body table-responsive">
+              <table id="history-table"  class="table table-striped table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th class="text-start">Execução N°</th>
+                    <th class="text-start">Tempo Decorrido</th>
+                    <th class="text-start">Melhor Acurácia</th>
+                    <th class="text-start">Data</th>
+                    <th class="text-start">Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="results-table"></tbody>    
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de visualização -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-white">
+          <div class="modal-header">
+            <h5 class="modal-title" id="imageModalLabel">Visualização Ampliada</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body text-center">
+            <img id="modalImage" src="" alt="Imagem ampliada" class="img-fluid rounded shadow"
+              style="image-rendering: pixelated; width: 300px;" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+      <div class="container text-center">
+        <p class="mb-0">
+          © 2025 NeuroEvolução - Otimização de Redes Neurais com Algoritmos
+          Genéticos
+        </p>
+      </div>
+    </footer>
+
+    <script src="./js/jspdf.umd.min.js"></script>
+    <script src="./js/datatables.min.js"></script>
+    <script>
+      window.jspdf = window.jspdf || {};
+      window.jspdf.jsPDF = window.jspdf.jsPDF;
+          $(document).ready(function () {
+            $('#history-table').DataTable({
+              dom: "Bfrtip",
+              pageLength: 3,
+              lengthChange: false,
+              ordering: false,
+              buttons: [
+                {
+                  extend: 'copyHtml5',
+                  exportOptions: {
+                    columns: [0, 1, 2, 3]
+                  }
+                },
+                {
+                  extend: 'csvHtml5',
+                  exportOptions: {
+                    columns: [0, 1, 2, 3]
+                  }
+                },
+                {
+                  extend: 'excelHtml5',
+                  exportOptions: {
+                    columns: [0, 1, 2, 3]
+                  }
+                },
+                {
+                  extend: 'pdfHtml5',
+                  exportOptions: {
+                    columns: [0, 1, 2, 3]
+                  },
+                  customize: function (doc) {
+                    // Redimensiona a tabela no PDF para ocupar toda a largura da página
+                    doc.content[1].table.widths = ['*', '*', '*', '*'];
+                  }
+                }
+              ],
+              
+              language: {
+                search: "Buscar:",
+                paginate: {
+                  first: "<<",
+                  last: ">>",
+                  next: ">",
+                  previous: "<"
+                },
+                info: "Mostrando _START_ a _END_ de _TOTAL_ execuções",
+                infoEmpty: "Nenhum resultado",
+                zeroRecords: "Nenhum resultado encontrado"
+              }, 
+              
+            });
+  });
+    </script>
+    <script src="./js/chart.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <script src="./js/index.js"></script>
+    <script src="./js/toastify.min.js"></script>
+  </body>
+</html>

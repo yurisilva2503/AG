@@ -1,0 +1,20 @@
+services:
+  api:
+    build:
+      context: .
+      target: api
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - api

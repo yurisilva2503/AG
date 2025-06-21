@@ -1,0 +1,284 @@
+:root {
+    --primary-color: #000;
+    --secondary-color: #20c997;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+}
+
+body {
+    background-color: #f5f7fa;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+    font-family: monospace !important;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 15px 15px 0 0 !important;
+    font-weight: 600;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-success {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-success:hover {
+    background-color: #17a589;
+    border-color: #17a589;
+}
+
+.param-card {
+    background-color: white;
+    border-left: 4px solid var(--primary-color);
+}
+
+.result-card {
+    background-color: white;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.progress {
+    height: 10px;
+    border-radius: 5px;
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+}
+
+.best-individual {
+    background-color: rgba(111, 66, 193, 0.1);
+    border-left: 4px solid var(--primary-color);
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.config-badge {
+    background-color: var(--primary-color);
+    font-weight: normal;
+}
+
+.fitness-chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+.neon-text {
+    text-shadow: 0 0 5px rgba(111, 66, 193, 0.5);
+}
+
+.floating-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.toastify {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.toastify-error {
+    background: #dc3545;
+    color: white;
+}
+
+.toastify-success {
+    background: #28a745;
+    color: white;
+}
+
+.toastify-info {
+    background: #0d6efd;
+    color: white;
+}
+
+/* Animações de carregamento */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #20c997;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+.loading-text {
+    color: #6c757d;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.loading-progress {
+    width: 80%;
+    height: 8px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    margin-top: 15px;
+    overflow: hidden;
+}
+
+.loading-progress-bar {
+    height: 100%;
+    background-color: #20c997;
+    width: 0%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Efeito de fade para quando os resultados carregarem */
+.classification-examples {
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.sample-image {
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.loading-text {
+    font-size: 1.1rem;
+    color: #6c757d;
+}
+
+.loading-progress {
+    max-width: 300px; }
+
+    
+.dt-buttons {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 5px
+}
+
+.dt-search {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.dt-info {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    align-items: center;
+}
+
+.dt-paging {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 5px;
+    align-items: center;
+}
+
+/* Estilo base dos botões */
+.dt-button {
+    border: 1px solid black !important;
+    background-color: black !important;
+    color: white !important;
+    border-radius: 8px !important;
+    transition: transform 0.3s ease;
+}
+
+.dt-button:hover {
+    transform: scale(1.02);
+}
+
+
+/* Ícones (se desejar usar) */
+.dt-button::before {
+    margin-right: 6px;
+    font-family: "bootstrap-icons";
+    vertical-align: middle;
+}
+
+/* Ícones personalizados para cada botão */
+.buttons-copy::before {
+    content: "\f290";
+    /* bi-clipboard */
+}
+
+.buttons-csv::before {
+    content: "\f389";
+    /* bi-file-earmark-spreadsheet */
+}
+
+.buttons-excel::before {
+    content: "\f366";
+    /* bi-file-earmark-excel */
+}
+
+.buttons-pdf::before {
+    content: "\f368";
+    /* bi-file-earmark-pdf */
+}
+
+.dt-paging-button.current{
+    background-color: #000 !important;
+    color: white !important;
+}
